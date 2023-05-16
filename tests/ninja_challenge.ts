@@ -4,6 +4,7 @@ import {
   get_ui_devices,
   compare_ui_vs_api_devices,
   validate_edit_remove_buttons,
+  rename_system,
 } from "../pages/actions/actions";
 const { LandingPage } = require("../pages/locators/LandingPage");
 const dataSet = require('./data.json');
@@ -53,6 +54,7 @@ dataSet.forEach((data) => {
 });
 
 test("Test 3", async (t) => {
+    
   let id_device: String;
   let href = await Selector("div.list-devices div.device-main-box")
     .nth(0)
@@ -62,20 +64,7 @@ test("Test 3", async (t) => {
 
   if (href) {
     id_device = href.split("/")[3];
-    const resp = await t.request.put({
-      url: "http://localhost:3000/devices/" + id_device,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        id: id_device,
-        system_name: "Rename Device",
-        type: "WINDOWS",
-        hdd_capacity: "10",
-      },
-    });
-    //console.log(resp.status.valueOf());
-    //console.log(resp.body.valueOf());
+    const resp = rename_system(t,id_device);
   }
 
   await t.eval(() => location.reload());

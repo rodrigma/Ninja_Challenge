@@ -36,7 +36,8 @@ async function get_ui_devices() {
 }
 async function compare_ui_vs_api_devices(
   map_api_devices: Map<String, Array<String>>,
-  map_ui_devices: Map<String, Array<String>>,t:TestController
+  map_ui_devices: Map<String, Array<String>>,
+  t: TestController
 ) {
   const arr_keys_api_devices = map_api_devices.keys();
   let isCorrect: boolean;
@@ -118,9 +119,24 @@ async function validate_edit_remove_buttons(t: TestController) {
     await t.expect(true).eql(btn_remove);
   }
 }
+async function rename_system(t:TestController, id_device: String) {
+  const resp = await t.request.put({
+    url: "http://localhost:3000/devices/" + id_device,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: {
+      id: id_device,
+      system_name: "Rename Device",
+      type: "WINDOWS",
+      hdd_capacity: "10",
+    },
+  });
+}
 export {
   get_api_devices,
   get_ui_devices,
   compare_ui_vs_api_devices,
   validate_edit_remove_buttons,
+  rename_system,
 };
