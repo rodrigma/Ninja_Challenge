@@ -1,6 +1,6 @@
 [
     {
-        "system_name": "NEW REPOSITORY",
+        "systemName": "NEW REPOSITORY",
         "type": "WINDOWS SERVER",
         "capacity": "100",
         "rename_system": "Rename Device"

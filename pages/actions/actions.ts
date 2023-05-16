@@ -1,89 +1,89 @@
 import { Selector } from "testcafe";
 
-async function get_api_devices(t: TestController) {
+async function getAPIDevi(t: TestController) {
   const results = await t.request("http://localhost:3000/devices");
 
   //console.log(results);
-  const json_devices = JSON.parse(JSON.stringify(await results.body));
-  let map_api_devices = new Map();
+  const jsonDevices = JSON.parse(JSON.stringify(await results.body));
+  let mapAPIDEvices = new Map();
 
-  for await (const device of json_devices) {
+  for await (const device of jsonDevices) {
     //console.log(device);
-    map_api_devices.set(device.system_name, [
-      device.system_name,
+    mapAPIDEvices.set(device.systemName, [
+      device.systemName,
       device.type,
-      device.hdd_cacacity,
+      device.hddCapacity,
     ]);
   }
-  return map_api_devices;
+  return mapAPIDEvices;
 }
-async function get_ui_devices() {
-  let map_ui_devices = new Map();
-  let ui_name: String, ui_type: String, ui_capacity: String;
-  const list_devices = Selector(
+async function getUIDevices() {
+  let mapUIDevices = new Map();
+  let uiName: String, uiType: String, uiCapacity: String;
+  const listDevices = Selector(
     "div.list-devices div.device-main-box div.device-info"
   );
 
-  for (let i = 0; i <= (await list_devices.count) - 1; i++) {
-    ui_name = await list_devices.nth(i).child("span.device-name").innerText;
-    ui_type = await list_devices.nth(i).child("span.device-type").innerText;
-    ui_capacity = await list_devices.nth(i).find("span.device-capacity")
+  for (let i = 0; i <= (await listDevices.count) - 1; i++) {
+    uiName = await listDevices.nth(i).child("span.device-name").innerText;
+    uiType = await listDevices.nth(i).child("span.device-type").innerText;
+    uiCapacity = await listDevices.nth(i).find("span.device-capacity")
       .innerText;
 
-    map_ui_devices.set(ui_name, [ui_name, ui_type, ui_capacity]);
+    mapUIDevices.set(uiName, [uiName, uiType, uiCapacity]);
   }
-  return map_ui_devices;
+  return mapUIDevices;
 }
-async function compare_ui_vs_api_devices(
-  map_api_devices: Map<String, Array<String>>,
-  map_ui_devices: Map<String, Array<String>>,
+async function compareUIAPIDevices(
+  mapAPIDEvices: Map<String, Array<String>>,
+  mapUIDevices: Map<String, Array<String>>,
   t: TestController
 ) {
-  const arr_keys_api_devices = map_api_devices.keys();
+  const arrKeysAPIDevices = mapAPIDEvices.keys();
   let isCorrect: boolean;
-  let ui_type: String, ui_capacity: String, ui_name: String;
-  let api_name: String, api_type: String, api_capacity: String;
+  let uiType: String, uiCapacity: String, uiName: String;
+  let apiName: String, apiType: String, apiCapacity: String;
 
-  if (map_api_devices.size === map_ui_devices.size) {
-    for await (let key of arr_keys_api_devices) {
+  if (mapAPIDEvices.size === mapUIDevices.size) {
+    for await (let key of arrKeysAPIDevices) {
       isCorrect = false;
 
-      if (map_ui_devices.has(key)) {
-        let arr_ui_device = map_ui_devices.get(key);
-        let arr_api_device = map_ui_devices.get(key);
+      if (mapUIDevices.has(key)) {
+        let arrUIDevice = mapUIDevices.get(key);
+        let arrAPIDevice = mapUIDevices.get(key);
 
-        if (arr_ui_device && arr_api_device) {
+        if (arrUIDevice && arrAPIDevice) {
           //UI Elements
-          ui_name = arr_ui_device[0];
-          ui_type = arr_ui_device[1];
-          ui_capacity = arr_ui_device[2];
+          uiName = arrUIDevice[0];
+          uiType = arrUIDevice[1];
+          uiCapacity = arrUIDevice[2];
 
           //API Elements
-          api_name = arr_api_device[0];
-          api_type = arr_api_device[1];
-          api_capacity = arr_api_device[2];
+          apiName = arrAPIDevice[0];
+          apiType = arrAPIDevice[1];
+          apiCapacity = arrAPIDevice[2];
 
-          if (ui_name === api_name) {
-            if ((ui_type = api_type)) {
-              if (ui_capacity === api_capacity) {
+          if (uiName === apiName) {
+            if ((uiType = apiType)) {
+              if (uiCapacity === apiCapacity) {
                 isCorrect = true;
                 /*
                 console.log(
                   "***" +
-                    ui_name +
+                    uiName +
                     "***" +
                     "\n" +
-                    ui_name +
+                    uiName +
                     " = " +
-                    api_name +
+                    apiName +
                     "\n" +
-                    ui_type +
+                    uiType +
                     " = " +
-                    api_type +
+                    apiType +
                     "\n" +
-                    ui_capacity +
+                    uiCapacity +
                     " = " +
-                    api_capacity
+                    apiCapacity
                     
                 );*/
               }
@@ -96,47 +96,53 @@ async function compare_ui_vs_api_devices(
   } else {
     console.log(
       "El número de elementos de API (" +
-        map_api_devices.size +
+        mapAPIDEvices.size +
         ")" +
         " y UI(" +
-        map_ui_devices.size +
+        mapUIDevices.size +
         " son distintos"
     );
   }
 }
-async function validate_edit_remove_buttons(t: TestController) {
-  const list_devices = Selector(
+async function validateEditRemoveButtons(t: TestController) {
+  const listDevices = Selector(
     "div.list-devices div.device-main-box div.device-options"
   );
-  let btn_edit: boolean;
-  let btn_remove: boolean;
+  let btnEdit: boolean;
+  let btnRemove: boolean;
 
-  for (let i = 0; i <= (await list_devices.count) - 1; i++) {
-    btn_edit = await list_devices.nth(i).child("a.device-edit").exists;
-    btn_remove = await list_devices.nth(i).child("button.device-remove").exists;
+  for (let i = 0; i <= (await listDevices.count) - 1; i++) {
+    btnEdit = await listDevices.nth(i).child("a.device-edit").exists;
+    btnRemove = await listDevices.nth(i).child("button.device-remove").exists;
 
-    await t.expect(true).eql(btn_edit);
-    await t.expect(true).eql(btn_remove);
+    await t.expect(true).eql(btnEdit);
+    await t.expect(true).eql(btnRemove);
   }
 }
-async function rename_system(t:TestController, id_device: String) {
+async function renameSystem(t:TestController, idDevice: String) {
   const resp = await t.request.put({
-    url: "http://localhost:3000/devices/" + id_device,
+    url: "http://localhost:3000/devices/" + idDevice,
     headers: {
       "Content-Type": "application/json",
     },
     body: {
-      id: id_device,
-      system_name: "Rename Device",
+      id: idDevice,
+      systemName: "Rename Device",
       type: "WINDOWS",
       hdd_capacity: "10",
     },
   });
 }
+async function deleteRegister(t:TestController,idDevice:String) {
+  const resp = await t.request.delete({
+    url: "http://localhost:3000/devices/" + idDevice,
+  });
+}
 export {
-  get_api_devices,
-  get_ui_devices,
-  compare_ui_vs_api_devices,
-  validate_edit_remove_buttons,
-  rename_system,
+  getAPIDevi,
+  getUIDevices,
+  compareUIAPIDevices,
+  validateEditRemoveButtons,
+  renameSystem,
+  deleteRegister,
 };
