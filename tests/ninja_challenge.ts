@@ -1,54 +1,55 @@
 import { fixture, Selector, t, test } from "testcafe";
-import { 
-  get_api_devices
-  ,get_ui_devices
-  ,compare_ui_vs_api_devices
-  ,validate_edit_remove_buttons } from "../pages/actions/actions";
-  const {LandingPage} = require('../pages/locators/landing_page')
-  const dataSet = require('./data.json');
-
+import {
+  get_api_devices,
+  get_ui_devices,
+  compare_ui_vs_api_devices,
+  validate_edit_remove_buttons,
+} from "../pages/actions/actions";
+const { LandingPage } = require("../pages/locators/LandingPage");
+const dataSet = require('./data.json');
 fixture("Challenge").page("http://localhost:3001/");
 
 // Tests
 test("Test 1", async (t) => {
   let map_api_devices = await get_api_devices(t);
   let map_ui_devices = await get_ui_devices();
-  await compare_ui_vs_api_devices(map_api_devices, map_ui_devices,t);
+  await compare_ui_vs_api_devices(map_api_devices, map_ui_devices, t);
   await validate_edit_remove_buttons(t);
 });
 
-test("Test 2", async (t) => {
-  
-  const lp = new LandingPage(t);
-  const system_name = dataSet.system_name;
-  const type = dataSet.type;
-  const capacity = dataSet.capacity;
-  await t.click(lp.btn_submit);
-  await t.typeText(lp.input_system_name, system_name);
-  let select_type = lp.select_type;
-  let option_type = select_type.find("option");
-  await t.click(select_type).click(option_type.withText(type));
-  await t.typeText(lp.input_capacity, capacity);
-  await t.click(lp.btn_update);
+dataSet.forEach((data) => {
+  test("Test 2", async (t) => {
+    const lp = new LandingPage(t);
+    const system_name = data.system_name;
+    const type = data.type;
+    const capacity = data.capacity;
+    await t.click(lp.btn_submit);
+    await t.typeText(lp.input_system_name, data.system_name);
+    let select_type = lp.select_type;
+    let option_type = select_type.find("option");
+    await t.click(select_type).click(option_type.withText(type));
+    await t.typeText(lp.input_capacity, capacity);
+    await t.click(lp.btn_update);
 
-  let map_ui_devices = get_ui_devices();
+    let map_ui_devices = get_ui_devices();
 
-  if ((await map_ui_devices).has(system_name)) {
-    const device_info = (await map_ui_devices).get(system_name);
-    let ui_name = device_info.nth(0);
-    let ui_type = device_info.nth(1);
-    let ui_capacity = device_info.nth(2);
-    let isCorrect = false;
+    if ((await map_ui_devices).has(data.system_name)) {
+      const device_info = (await map_ui_devices).get(data.system_name);
+      let ui_name = device_info.nth(0);
+      let ui_type = device_info.nth(1);
+      let ui_capacity = device_info.nth(2);
+      let isCorrect = false;
 
-    if (system_name === ui_name) {
-      if (type === ui_type) {
-        if (capacity === ui_capacity) {
-          isCorrect = true;
+      if (system_name === ui_name) {
+        if (type === ui_type) {
+          if (capacity === ui_capacity) {
+            isCorrect = true;
+          }
         }
       }
+      t.expect(true).eql(isCorrect);
     }
-    t.expect(true).eql(isCorrect);
-  }
+  });
 });
 
 test("Test 3", async (t) => {
@@ -73,8 +74,8 @@ test("Test 3", async (t) => {
         hdd_capacity: "10",
       },
     });
-    console.log(resp.status.valueOf());
-    console.log(resp.body.valueOf());
+    //console.log(resp.status.valueOf());
+    //console.log(resp.body.valueOf());
   }
 
   await t.eval(() => location.reload());
@@ -111,5 +112,3 @@ test("Test 4", async (t) => {
     await t.expect(0).eql(last_element_count);
   }
 });
-
-

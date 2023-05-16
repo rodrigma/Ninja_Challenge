@@ -66,6 +66,7 @@ async function compare_ui_vs_api_devices(
             if ((ui_type = api_type)) {
               if (ui_capacity === api_capacity) {
                 isCorrect = true;
+                /*
                 console.log(
                   "***" +
                     ui_name +
@@ -82,7 +83,8 @@ async function compare_ui_vs_api_devices(
                     ui_capacity +
                     " = " +
                     api_capacity
-                );
+                    
+                );*/
               }
             }
           }
